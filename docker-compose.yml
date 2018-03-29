@@ -1,0 +1,33 @@
+version: '2'
+services:
+    web:
+        build:
+            context: ./
+            dockerfile: docker_conf/web.docker
+        volumes:
+            - ./:/var/www
+        ports:
+            - "8080:80"
+        links:
+            - app
+        container_name: mesh-app-web
+    app:
+        build:
+            context: ./
+            dockerfile: docker_conf/app.docker
+        volumes:
+            - ./:/var/www
+        links:
+            - database
+        environment:
+            - "DB_PORT=3306"
+            - "DB_HOST=database"
+        container_name: mesh-app-app
+    database:
+        image: mysql:5.6
+        environment:
+            - "MYSQL_ROOT_PASSWORD=root"
+            - "MYSQL_DATABASE=mesh-app"
+        ports:
+            - "33061:3306"
+        container_name: mesh-app-db
